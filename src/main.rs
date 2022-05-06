@@ -1,3 +1,14 @@
+use std::io::{stdin, stdout, Write};
+
 fn main() {
-    println!("Hello, world!");
+	loop {
+		prompt();
+		let mut input = String::new();
+		stdin().read_line(&mut input).unwrap();
+	}
+}
+
+fn prompt() {
+	print!("> ");
+	stdout().flush().ok();
 }
