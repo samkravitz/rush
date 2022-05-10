@@ -1,0 +1,6 @@
+main = { SOI ~ cmd ~ (arg)* ~ EOI }
+cmd = { ident }
+arg = { ("-")? ~ ident }
+
+ident = @{ (ASCII_ALPHANUMERIC)+ }
+WHITESPACE = _{ " " | "\t" }
