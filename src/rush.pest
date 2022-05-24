@@ -1,6 +1,31 @@
-main = { SOI ~ cmd ~ (arg)* ~ EOI }
-cmd = { ident }
+main = { SOI ~ cmd ~ EOI }
+cmd = {
+	(cmd_and_args ~ io_modifier_list ~ pipe_list ~ background) |
+	(cmd_and_args ~ pipe_list ~ io_modifier_list ~ background)
+	}
+cmd_and_args = { ident ~ (arg)* }
 arg = { ("-")? ~ ident }
+pipe_list = { (pipe)* }
+io_modifier_list = { (io_modifier)* }
+
+pipe = { "|" ~ cmd_and_args }
+io_modifier = { 
+	output_modifier |
+	input_modifier |
+	output_append_modifier |
+	error_output_modifier |
+	error_append_modifier |
+	twogreat_modifier
+}
+
+output_modifier = { ">" ~ ident }
+input_modifier = { "<" ~ ident }
+output_append_modifier = { ">>" ~ ident }
+error_output_modifier = { ">&" ~ ident }
+error_append_modifier = { ">>&" ~ ident }
+twogreat_modifier = { "2>" ~ ident }
+
+background = { ("&")? }
 
 ident = @{ (ASCII_ALPHANUMERIC)+ }
 WHITESPACE = _{ " " | "\t" }
