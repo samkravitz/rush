@@ -39,7 +39,13 @@ fn main() {
 			}
 		}
 
-		println!("{} {:?}", cmd, args);
+		let result = std::process::Command::new(&cmd).args(args).spawn();
+
+		if let Ok(mut child) = result {
+			child.wait().ok();
+		} else {
+			println!("[rush]: Unknown command: {}", cmd);
+		}
 	}
 }
 
