@@ -24,10 +24,17 @@ fn main() {
 		let mut cmd: String = String::new();
 		let mut args: Vec<String> = Vec::new();
 
-		for tok in parsed.into_inner() {
-			match tok.as_rule() {
-				Rule::cmd => cmd = String::from(tok.as_str()),
-				Rule::arg => args.push(String::from(tok.as_str())),
+		for rule in parsed.into_inner().next().unwrap().into_inner() {
+			match rule.as_rule() {
+				Rule::cmd_and_args => {
+					for tok in rule.into_inner() {
+						match tok.as_rule() {
+							Rule::ident => cmd = String::from(tok.as_str()),
+							Rule::arg => args.push(String::from(tok.as_str())),
+							_ => {}
+						}
+					}
+				}
 				_ => {}
 			}
 		}
