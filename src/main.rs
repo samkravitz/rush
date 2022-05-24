@@ -11,45 +11,45 @@ use pest::Parser;
 pub struct PestParser;
 
 fn main() {
-	loop {
-		prompt();
-		let mut line = String::new();
-		stdin().read_line(&mut line).unwrap();
+    loop {
+        prompt();
+        let mut line = String::new();
+        stdin().read_line(&mut line).unwrap();
 
-		let parsed = PestParser::parse(Rule::main, line.trim())
-			.expect("Unsuccessful parse")
-			.next()
-			.unwrap();
+        let parsed = PestParser::parse(Rule::main, line.trim())
+            .expect("Unsuccessful parse")
+            .next()
+            .unwrap();
 
-		let mut cmd: String = String::new();
-		let mut args: Vec<String> = Vec::new();
+        let mut cmd: String = String::new();
+        let mut args: Vec<String> = Vec::new();
 
-		for rule in parsed.into_inner().next().unwrap().into_inner() {
-			match rule.as_rule() {
-				Rule::cmd_and_args => {
-					for tok in rule.into_inner() {
-						match tok.as_rule() {
-							Rule::ident => cmd = String::from(tok.as_str()),
-							Rule::arg => args.push(String::from(tok.as_str())),
-							_ => {}
-						}
-					}
-				}
-				_ => {}
-			}
-		}
+        for rule in parsed.into_inner().next().unwrap().into_inner() {
+            match rule.as_rule() {
+                Rule::cmd_and_args => {
+                    for tok in rule.into_inner() {
+                        match tok.as_rule() {
+                            Rule::ident => cmd = String::from(tok.as_str()),
+                            Rule::arg => args.push(String::from(tok.as_str())),
+                            _ => {}
+                        }
+                    }
+                }
+                _ => {}
+            }
+        }
 
-		let result = std::process::Command::new(&cmd).args(args).spawn();
+        let result = std::process::Command::new(&cmd).args(args).spawn();
 
-		if let Ok(mut child) = result {
-			child.wait().ok();
-		} else {
-			println!("[rush]: Unknown command: {}", cmd);
-		}
-	}
+        if let Ok(mut child) = result {
+            child.wait().ok();
+        } else {
+            println!("[rush]: Unknown command: {}", cmd);
+        }
+    }
 }
 
 fn prompt() {
-	print!("> ");
-	stdout().flush().ok();
+    print!("> ");
+    stdout().flush().ok();
 }
