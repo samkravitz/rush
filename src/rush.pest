@@ -27,5 +27,5 @@ twogreat_modifier = { "2>" ~ ident }
 
 background = { ("&")? }
 
-ident = @{ (ASCII_ALPHANUMERIC)+ }
+ident = @{ (ASCII_ALPHANUMERIC | ".")+ }
 WHITESPACE = _{ " " | "\t" }
