@@ -1,50 +1,26 @@
-use std::io::{stdin, stdout, Write};
-
-extern crate pest;
 #[macro_use]
 extern crate pest_derive;
 
-use pest::Parser;
+mod command;
+mod parse;
 
-#[derive(Parser)]
-#[grammar = "rush.pest"]
-pub struct PestParser;
+use std::io::{stdin, stdout, Write};
 
 fn main() {
     loop {
         prompt();
         let mut line = String::new();
         stdin().read_line(&mut line).unwrap();
-
-        let parsed = PestParser::parse(Rule::main, line.trim())
-            .expect("Unsuccessful parse")
-            .next()
-            .unwrap();
-
-        let mut cmd: String = String::new();
-        let mut args: Vec<String> = Vec::new();
-
-        for rule in parsed.into_inner().next().unwrap().into_inner() {
-            match rule.as_rule() {
-                Rule::cmd_and_args => {
-                    for tok in rule.into_inner() {
-                        match tok.as_rule() {
-                            Rule::ident => cmd = String::from(tok.as_str()),
-                            Rule::arg => args.push(String::from(tok.as_str())),
-                            _ => {}
-                        }
-                    }
-                }
-                _ => {}
+        let command = parse::parse(line.trim());
+        for simple_command in command.simple_commands {
+            let result = std::process::Command::new(&simple_command.cmd)
+                .args(&simple_command.args)
+                .spawn();
+            if let Ok(mut child) = result {
+                child.wait().ok();
+            } else {
+                println!("[rush]: Unknown command: {}", &simple_command.cmd);
             }
-        }
-
-        let result = std::process::Command::new(&cmd).args(args).spawn();
-
-        if let Ok(mut child) = result {
-            child.wait().ok();
-        } else {
-            println!("[rush]: Unknown command: {}", cmd);
         }
     }
 }

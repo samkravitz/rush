@@ -1,5 +1,6 @@
+#[derive(Debug)]
 pub struct Command {
-    simple_commands: Vec<SimpleCommand>,
+    pub simple_commands: Vec<SimpleCommand>,
     outfile: String,
     infile: String,
     errfile: String,
@@ -7,25 +8,44 @@ pub struct Command {
     append: bool,
 }
 
+#[derive(Debug)]
 pub struct SimpleCommand {
-    args: Vec<String>,
+    pub cmd: String,
+    pub args: Vec<String>,
 }
 
 impl Command {
-    pub fn new() -> Command {
+    pub fn new(
+        outfile: String,
+        infile: String,
+        errfile: String,
+        background: bool,
+        append: bool,
+    ) -> Command {
         Command {
             simple_commands: Vec::new(),
-            outfile: String::new(),
-            infile: String::new(),
-            errfile: String::new(),
-            background: false,
-            append: false,
+            outfile,
+            infile,
+            errfile,
+            background,
+            append,
         }
+    }
+
+    pub fn add_simple_command(&mut self, s: String) {
+        self.simple_commands.push(SimpleCommand::new(s));
     }
 }
 
 impl SimpleCommand {
-    pub fn new() -> SimpleCommand {
-        SimpleCommand { args: Vec::new() }
+    pub fn new(s: String) -> SimpleCommand {
+        let mut args: Vec<String> = Vec::new();
+        let mut split: Vec<&str> = s.split(" ").collect();
+        let cmd = String::from(split[0]);
+
+        for arg in &split[1..] {
+            args.push(String::from(*arg));
+        }
+        SimpleCommand { cmd, args }
     }
 }
